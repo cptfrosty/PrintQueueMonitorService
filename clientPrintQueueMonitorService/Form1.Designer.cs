@@ -49,13 +49,13 @@
             this.chart1.ChartAreas.Add(chartArea2);
             legend2.Name = "Legend1";
             this.chart1.Legends.Add(legend2);
-            this.chart1.Location = new System.Drawing.Point(12, 248);
+            this.chart1.Location = new System.Drawing.Point(12, 156);
             this.chart1.Name = "chart1";
             series2.ChartArea = "ChartArea1";
             series2.Legend = "Legend1";
             series2.Name = "Series1";
             this.chart1.Series.Add(series2);
-            this.chart1.Size = new System.Drawing.Size(409, 190);
+            this.chart1.Size = new System.Drawing.Size(450, 190);
             this.chart1.TabIndex = 0;
             this.chart1.Text = "chart1";
             // 
@@ -77,6 +77,7 @@
             this.disconnectButton.TabIndex = 2;
             this.disconnectButton.Text = "Disconnect";
             this.disconnectButton.UseVisualStyleBackColor = true;
+            this.disconnectButton.Click += new System.EventHandler(this.disconnectButton_Click_1);
             // 
             // intervalNumericUpDown
             // 
@@ -105,7 +106,7 @@
             // 
             // saveButton
             // 
-            this.saveButton.Location = new System.Drawing.Point(16, 170);
+            this.saveButton.Location = new System.Drawing.Point(12, 127);
             this.saveButton.Name = "saveButton";
             this.saveButton.Size = new System.Drawing.Size(75, 23);
             this.saveButton.TabIndex = 6;
@@ -135,7 +136,7 @@
             this.Controls.Add(this.connectButton);
             this.Controls.Add(this.chart1);
             this.Name = "ClientForm";
-            this.Text = "Form1";
+            this.Text = "Клиент";
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.intervalNumericUpDown)).EndInit();
             this.ResumeLayout(false);

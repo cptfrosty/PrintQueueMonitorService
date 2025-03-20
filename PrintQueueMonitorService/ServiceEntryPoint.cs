@@ -299,7 +299,8 @@ namespace PrintQueueMonitorService
                             try
                             {
                                 string intervalString = command.Substring("SetInterval:".Length);
-                                int interval = int.Parse(intervalString);
+                                decimal intervalDecimal = decimal.Parse(intervalString);
+                                int interval = (int)intervalDecimal;
 
                                 SetInterval(interval);
                                 writer.WriteLine("OK:IntervalSet");
@@ -316,6 +317,25 @@ namespace PrintQueueMonitorService
                                 WriteToLog($"Ошибка при обработке команды SetInterval: {ex.Message}");
                                 writer.WriteLine($"ERROR:IntervalNotSet - {ex.Message}");
                                 WriteToLog($"Отправлен ответ: ERROR:IntervalNotSet - {ex.Message}");
+                            }
+                        }
+                        else if (command.StartsWith("GetCountQueue:")) //Получить кол-во очереди в печати
+                        {
+                            try
+                            {
+                                writer.WriteLine($"QUEUE_LENGTH:{lastAllQueueLength}");
+                            }
+                            catch (JsonSerializationException ex)
+                            {
+                                WriteToLog($"Ошибка при десериализации JSON (SetPrinters): {ex.Message}");
+                                writer.WriteLine($"ERROR:PrintersNotSet - Ошибка десериализации JSON: {ex.Message}");
+                                WriteToLog($"Отправлен ответ: ERROR:PrintersNotSet - Ошибка десериализации JSON: {ex.Message}");
+                            }
+                            catch (Exception ex)
+                            {
+                                WriteToLog($"Ошибка при обработке команды SetPrinters: {ex.Message}");
+                                writer.WriteLine($"ERROR:PrintersNotSet - {ex.Message}");
+                                WriteToLog($"Отправлен ответ: ERROR:PrintersNotSet - {ex.Message}");
                             }
                         }
                         else

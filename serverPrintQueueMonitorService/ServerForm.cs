@@ -1,10 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Management;
@@ -117,7 +113,7 @@ namespace serverPrintQueueMonitorService
                     SetSettings(settings);
                     break;
                 case "GetQueueLength": //  Добавлен пример команды
-                    result = "QUEUE_LENGTH:10"; //  Пример значения
+                    result = $"QUEUE_LENGTH:{GetQueueLength()}"; //  Пример значения
                     break;
                 default:
                     result = "Unknown command";
@@ -220,7 +216,7 @@ namespace serverPrintQueueMonitorService
                             }
 
                             // Устанавливаем интервал
-                            Log.Print($"Отправка SetInterval: {settings.Interval}");
+                            Log.Print($"Отправка SetInterval:{settings.Interval}");
                             writer.WriteLine($"SetInterval:{settings.Interval}");
                             writer.Flush();
 
@@ -250,7 +246,49 @@ namespace serverPrintQueueMonitorService
             }
         }
 
+        private static int GetQueueLength()
+        {
+            int result = 0;
+            if (_serviceIsRunning)
+            {
+                try
+                {
+                    using (TcpClient client = new TcpClient())
+                    {
+                        client.ReceiveTimeout = 10000;
+                        client.SendTimeout = 10000;
 
+                        client.Connect(_serverAddress, _servicePort); // Синхронное подключение
+                        using (NetworkStream stream = client.GetStream())
+                        using (StreamWriter writer = new StreamWriter(stream, Encoding.UTF8) { AutoFlush = true })
+                        using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+                        {
+                            writer.WriteLine($"GetCountQueue:");
+                            writer.Flush();
+
+                            string responsePrinters = reader.ReadLine(); // Синхронное чтение
+                            Log.Print($"Получен ответ (GetCountQueue): {responsePrinters}");
+
+                            result = int.Parse(responsePrinters.Substring("QUEUE_LENGTH:".Length).Trim());
+                        }
+                    }
+                }
+                catch (SocketException ex)
+                {
+                    Log.Print($"Ошибка при подключении к службе для GetCountQueue: {ex.Message}");
+                }
+                catch (Exception ex)
+                {
+                    Log.Print($"Ошибка при отправке GetCountQueue: {ex.Message} - {ex.GetType().FullName} - {ex.StackTrace}");
+                }
+            }
+            else
+            {
+                Log.Print("Служба не запущена. Невозможно установить настройки.");
+            }
+
+            return result;
+        }
 
 
         public static async Task<string[]> GetPrinters()

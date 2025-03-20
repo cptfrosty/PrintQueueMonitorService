@@ -115,9 +115,6 @@ namespace clientPrintQueueMonitorService
 
                 connectButton.Enabled = true;
                 disconnectButton.Enabled = false;
-                //sendCommandButton.Enabled = false;
-                //getPrintersButton.Enabled = false;
-                //setSettingsButton.Enabled = false;
                 _dataFetchTimer.Enabled = false;
                 LogMessage("Отключено от сервера.");
             }
@@ -134,6 +131,8 @@ namespace clientPrintQueueMonitorService
             command += ";" + jsonSettings;
 
             await SendCommand(command);
+
+            _fetchInterval = (int)intervalNumericUpDown.Value;
         }
 
         private async Task SendCommand(string command)
@@ -238,7 +237,7 @@ namespace clientPrintQueueMonitorService
             }
             else
             {
-                chart1.Series["QueueLength"].Points.AddXY(DateTime.Now, queueLength);
+                chart1.Series["QueueLength"].Points.AddXY(DateTime.Now.ToString("HH:mm:ss"), queueLength);
 
                 // Ограничение количества точек на графике (например, 100)
                 if (chart1.Series["QueueLength"].Points.Count > 100)
@@ -250,6 +249,11 @@ namespace clientPrintQueueMonitorService
                 chart1.ChartAreas["MainArea"].AxisX.ScaleView.ZoomReset();
                 chart1.ChartAreas["MainArea"].AxisY.ScaleView.ZoomReset();
             }
+        }
+
+        private void disconnectButton_Click_1(object sender, EventArgs e)
+        {
+            Disconnect();
         }
     }
 }
